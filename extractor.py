@@ -75,7 +75,7 @@ def get_frame_embeddings(mp3_path, model_type, target_fps, device='cuda'):
     batch_audio = make_audio_batch(audio[0], input_length, target_fps=target_fps)
     batch_audio = torch.split(batch_audio, 100)
     
-    state_dict = torch.load("Music_DeepEmbedding_Extractor/"+ checkpoint_path, map_location=torch.device('cpu'))
+    state_dict = torch.load("music_embedder/"+ checkpoint_path, map_location=torch.device('cpu'))
     new_state_map = {model_key: model_key.split("model.")[1] for model_key in state_dict.get("state_dict").keys()}
     new_state_dict = {new_state_map[key]: value for (key, value) in state_dict.get("state_dict").items() if key in new_state_map.keys()}
     model.load_state_dict(new_state_dict)
