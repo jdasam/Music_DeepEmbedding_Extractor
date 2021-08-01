@@ -5,7 +5,7 @@ import torchaudio
 import numpy as np
 import math
 
-from .model.net import FCN, FCN05, ShortChunkCNN_Res
+from .model.net import FCN, FCN05, ShortChunkCNN_Res, CPC
 
 def get_audio(audio_path):
     if audio_path[-3:] in ('m4a', 'aac'):
@@ -41,6 +41,12 @@ def load_model(models):
         checkpoint_path = (
             f"weights/FCN29-roc_auc=0.9025-pr_auc=0.4342.ckpt"
         )
+    elif models == "CPC037":
+        input_length= 59049
+        model = CPC(12, 59049)
+        checkpoint_path = (
+            f"weights/CPC037-roc_auc=0.7466.ckpt"
+    )  
     return input_length, model, checkpoint_path
 
 def make_frames_of_batch(audio_tensor, input_length, sr=16000, target_fps=2):
@@ -85,7 +91,10 @@ def get_frame_embeddings(mp3_path, model_type, target_fps, device='cuda'):
     for i in batch_audio:
         with torch.no_grad():
             # _, embeddings = model(i)
-            _, embeddings = model(i.to(device))
+            if 'CPC' in model_type:
+                _, embeddings = model.get_emb(i.to(device))
+            else:
+                _, embeddings = model(i.to(device))
             results.append(embeddings)
     results = torch.cat(results)
     return results

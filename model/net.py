@@ -84,7 +84,7 @@ class CPC(nn.Module):
         accuracy = torch.tensor(1.*correct.item()/batch_size)
         return accuracy, nce, hidden
 
-    def predict(self, x):
+    def get_emb(self, x):
         x = x.unsqueeze(1)
         z = self.encoder(x) 
         z = z.transpose(1,2) 
